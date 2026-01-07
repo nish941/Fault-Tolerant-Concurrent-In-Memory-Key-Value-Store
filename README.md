@@ -1,89 +1,66 @@
-💾 Fault-Tolerant, Concurrent In-Memory Key-Value Store
-https://img.shields.io/badge/C++-17-blue.svg
-https://img.shields.io/badge/License-MIT-green.svg
-https://img.shields.io/badge/build-passing-brightgreen.svg
-https://img.shields.io/badge/tests-passing-brightgreen.svg
-https://img.shields.io/badge/operations-10,000%252B%252Fsec-brightgreen
-https://img.shields.io/badge/durability-100%2525%2520recovery-success
+# 💾 Fault-Tolerant, Concurrent In-Memory Key-Value Store
+
+![C++](https://img.shields.io/badge/C++-17-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)
+![Concurrent](https://img.shields.io/badge/operations-10,000%2B%2Fsec-brightgreen)
+![Durability](https://img.shields.io/badge/durability-100%25%20recovery-success)
 
 A high-performance, fault-tolerant in-memory key-value store implemented in modern C++17, designed for maximum concurrency and absolute data durability. This project demonstrates advanced systems programming concepts including lock-based concurrency control, write-ahead logging for crash recovery, and efficient in-memory data structures.
 
-✨ Features
-🚀 High Performance
-10,000+ concurrent operations per second on commodity hardware
+## ✨ Features
 
-Fine-grained segment locking for minimal contention
+### 🚀 High Performance
+- **10,000+ concurrent operations per second** on commodity hardware
+- **Fine-grained segment locking** for minimal contention
+- **Lock-free atomic operations** for shared metadata
+- **Custom FNV-1a hashing** for optimal distribution
+- **Async I/O** using ASIO library for high-throughput networking
 
-Lock-free atomic operations for shared metadata
+### 🛡️ Fault Tolerance
+- **100% data recovery** after crashes via Write-Ahead Log (WAL)
+- **Synchronous durability guarantees** before operation acknowledgment
+- **Automatic crash recovery** on server restart
+- **Configurable sync modes** for performance vs durability trade-offs
+- **Atomic operations** ensuring consistent state
 
-Custom FNV-1a hashing for optimal distribution
+### 🔧 Advanced Features
+- **Thread-safe concurrent hash map** with segment-level locking
+- **TCP/IP network interface** with async I/O
+- **Configurable server parameters** via config file
+- **Comprehensive statistics** and monitoring
+- **Batch operation support**
+- **Docker containerization** ready
+- **Extensive test suite** including unit, integration, and benchmark tests
 
-Async I/O using ASIO library for high-throughput networking
+## 📋 Technical Architecture
 
-🛡️ Fault Tolerance
-100% data recovery after crashes via Write-Ahead Log (WAL)
+### Core Components
 
-Synchronous durability guarantees before operation acknowledgment
+1. **ConcurrentHashMap**
+   - Fine-grained segment locking (inspired by Java's ConcurrentHashMap)
+   - Configurable number of segments for concurrency control
+   - O(1) average-case time complexity for operations
+   - Visitor pattern for thread-safe iteration
+   - Custom FNV-1a hash function for optimal key distribution
 
-Automatic crash recovery on server restart
+2. **Write-Ahead Log (WAL)**
+   - Append-only log file for durability
+   - Atomic operation logging before memory updates
+   - Automatic recovery and state reconstruction
+   - Configurable sync modes (sync/async writes)
+   - Efficient binary format with sequence numbers for recovery
 
-Configurable sync modes for performance vs durability trade-offs
+3. **TCP Server**
+   - Async I/O using ASIO library
+   - Connection pooling and rate limiting
+   - Simple text-based protocol
+   - Configurable max connections (default: 1000)
 
-Atomic operations ensuring consistent state
+### Concurrency Model
 
-🔧 Advanced Features
-Thread-safe concurrent hash map with segment-level locking
-
-TCP/IP network interface with async I/O
-
-Configurable server parameters via config file
-
-Comprehensive statistics and monitoring
-
-Batch operation support
-
-Docker containerization ready
-
-Extensive test suite including unit, integration, and benchmark tests
-
-📋 Technical Architecture
-Core Components
-ConcurrentHashMap
-
-Fine-grained segment locking (inspired by Java's ConcurrentHashMap)
-
-Configurable number of segments for concurrency control
-
-O(1) average-case time complexity for operations
-
-Visitor pattern for thread-safe iteration
-
-Custom FNV-1a hash function for optimal key distribution
-
-Write-Ahead Log (WAL)
-
-Append-only log file for durability
-
-Atomic operation logging before memory updates
-
-Automatic recovery and state reconstruction
-
-Configurable sync modes (sync/async writes)
-
-Efficient binary format with sequence numbers for recovery
-
-TCP Server
-
-Async I/O using ASIO library
-
-Connection pooling and rate limiting
-
-Simple text-based protocol
-
-Configurable max connections (default: 1000)
-
-Concurrency Model
-cpp
+```cpp
 // Segment locking implementation
 std::vector<std::unique_ptr<Bucket>> buckets;
 std::shared_mutex bucket_mutex;
@@ -93,23 +70,28 @@ struct Bucket {
     std::list<KeyValue> items;
     mutable std::shared_mutex mutex;  // Reader-writer lock
 };
-Data Durability Flow
-text
+```
+
+### Data Durability Flow
+
+```
 Client Request → Log to WAL (fsync) → Update Memory → Acknowledge Client
        ↑                                         ↑
 Crash Recovery ←─── Replay WAL on Restart ←─── System Crash
-🚀 Getting Started
-Prerequisites
-C++17 compiler (GCC 7+, Clang 5+, or MSVC 2017+)
+```
 
-CMake 3.15+ or Make
+## 🚀 Getting Started
 
-ASIO library (standalone or Boost version)
+### Prerequisites
 
-Google Test for running unit tests (optional)
+- **C++17 compiler** (GCC 7+, Clang 5+, or MSVC 2017+)
+- **CMake 3.15+** or **Make**
+- **ASIO library** (standalone or Boost version)
+- **Google Test** for running unit tests (optional)
 
-Quick Start
-bash
+### Quick Start
+
+```bash
 # Clone the repository
 git clone https://github.com/yourusername/kv-store.git
 cd kv-store
@@ -125,13 +107,19 @@ make -j$(nproc)
 # In another terminal, use the client
 ./kv_client PUT user:1001 '{"name": "Alice", "balance": 500}'
 ./kv_client GET user:1001
-Using Docker
-bash
+```
+
+### Using Docker
+
+```bash
 # Build and run with Docker
 docker build -t kv-store .
 docker run -p 6379:6379 -v $(pwd)/data:/data kv-store
-Alternative Build with Make
-bash
+```
+
+### Alternative Build with Make
+
+```bash
 # Using Makefile
 make all
 
@@ -140,26 +128,39 @@ make all
 
 # Run tests
 make test
-📊 Performance Benchmarks
-Throughput Tests
-Operation	Threads	Throughput (ops/sec)	Latency (p99)
-GET	8	45,000	2.1ms
-PUT	8	38,000	2.8ms
-Mixed	16	52,000	3.5ms
-Recovery Performance
-Dataset Size	Recovery Time	Throughput (ops/sec)
-10,000 items	120ms	83,000
-100,000 items	1.2s	83,000
-1,000,000 items	12s	83,000
-Memory Efficiency
-Feature	Memory Usage	Description
-Key Storage	Optimized string handling	Custom allocator support
-Hash Table	Dynamic resizing	Load factor controlled
-WAL Buffer	Configurable (default 8KB)	Reduces disk I/O
-🔧 Configuration
-Create a kv_config.conf file:
+```
 
-ini
+## 📊 Performance Benchmarks
+
+### Throughput Tests
+
+| Operation | Threads | Throughput (ops/sec) | Latency (p99) |
+|-----------|---------|---------------------|---------------|
+| GET       | 8       | 45,000              | 2.1ms         |
+| PUT       | 8       | 38,000              | 2.8ms         |
+| Mixed     | 16      | 52,000              | 3.5ms         |
+
+### Recovery Performance
+
+| Dataset Size | Recovery Time | Throughput (ops/sec) |
+|--------------|---------------|---------------------|
+| 10,000 items | 120ms         | 83,000              |
+| 100,000 items| 1.2s          | 83,000              |
+| 1,000,000 items | 12s        | 83,000              |
+
+### Memory Efficiency
+
+| Feature | Memory Usage | Description |
+|---------|--------------|-------------|
+| Key Storage | Optimized string handling | Custom allocator support |
+| Hash Table | Dynamic resizing | Load factor controlled |
+| WAL Buffer | Configurable (default 8KB) | Reduces disk I/O |
+
+## 🔧 Configuration
+
+Create a `kv_config.conf` file:
+
+```ini
 # Server configuration
 server_port=6379
 max_connections=1000
@@ -176,20 +177,27 @@ sync_wal=true
 # Limits
 max_key_size=1024
 max_value_size=65536
-Configuration Options
-Parameter	Default	Description
-num_segments	64	Number of hash map segments for concurrency
-initial_bucket_size	16	Initial buckets per segment
-wal_file	kv_store.wal	Path to write-ahead log file
-wal_buffer_size	8192	Buffer size for WAL writes (bytes)
-sync_wal	true	Enable synchronous disk writes
-server_port	6379	TCP port for server
-max_key_size	1024	Maximum key size (bytes)
-max_value_size	65536	Maximum value size (bytes)
-max_connections	1000	Maximum concurrent connections
-📖 API Reference
-Command Line Client
-bash
+```
+
+### Configuration Options
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `num_segments` | 64 | Number of hash map segments for concurrency |
+| `initial_bucket_size` | 16 | Initial buckets per segment |
+| `wal_file` | kv_store.wal | Path to write-ahead log file |
+| `wal_buffer_size` | 8192 | Buffer size for WAL writes (bytes) |
+| `sync_wal` | true | Enable synchronous disk writes |
+| `server_port` | 6379 | TCP port for server |
+| `max_key_size` | 1024 | Maximum key size (bytes) |
+| `max_value_size` | 65536 | Maximum value size (bytes) |
+| `max_connections` | 1000 | Maximum concurrent connections |
+
+## 📖 API Reference
+
+### Command Line Client
+
+```bash
 # Basic operations
 ./kv_client PUT <key> <value>
 ./kv_client GET <key>
@@ -201,8 +209,11 @@ bash
 ./kv_client PING
 ./kv_client FLUSH
 ./kv_client STATS
-C++ Client API
-cpp
+```
+
+### C++ Client API
+
+```cpp
 #include "kv_client.hpp"
 
 kvstore::KVClient client("localhost", 6379);
@@ -237,10 +248,13 @@ std::vector<std::pair<std::string, std::string>> batch = {
     {"key2", "value2"}
 };
 bool success = client.putBatch(batch);
-Network Protocol
+```
+
+### Network Protocol
+
 The server uses a simple text-based protocol over TCP:
 
-text
+```
 Command Format:
 PUT "key" "value"
 GET "key"
@@ -260,9 +274,13 @@ PONG                    # Response for PING
 multiline_stats         # Response for STATS
 ERROR message           # Error response
 NOT_FOUND               # Key not found for GET/DELETE
-🧪 Testing
-Unit Tests
-bash
+```
+
+## 🧪 Testing
+
+### Unit Tests
+
+```bash
 # Run all tests
 make test
 ./bin/run_tests
@@ -273,8 +291,11 @@ make test
 
 # Run with verbose output
 ./bin/run_tests --gtest_also_run_disabled_tests --gtest_repeat=2
-Integration Tests
-bash
+```
+
+### Integration Tests
+
+```bash
 # Start server in background
 ./bin/kv_server &
 
@@ -283,15 +304,21 @@ bash
 
 # Stop server
 pkill kv_server
-Benchmark Tests
-bash
+```
+
+### Benchmark Tests
+
+```bash
 # Run throughput benchmarks
 ./bin/benchmark
 
 # Run concurrent client test
 ./scripts/benchmark.sh 8 10000
-Crash Recovery Test
-bash
+```
+
+### Crash Recovery Test
+
+```bash
 # Start server and populate data
 ./bin/kv_server &
 ./scripts/populate_data.sh
@@ -302,10 +329,13 @@ kill -9 $(pgrep kv_server)
 # Restart and verify recovery
 ./bin/kv_server &
 ./scripts/verify_recovery.sh
-📈 Monitoring
+```
+
+## 📈 Monitoring
+
 The server provides real-time statistics accessible through the STATS command:
 
-bash
+```bash
 # Get server statistics
 echo "STATS" | nc localhost 6379
 
@@ -316,8 +346,11 @@ echo "STATS" | nc localhost 6379
 # utilization: 1.0
 # connections: 42
 # wal_size: 1048576
-Health Monitoring Script
-bash
+```
+
+### Health Monitoring Script
+
+```bash
 #!/bin/bash
 # health_check.sh
 
@@ -345,43 +378,39 @@ else
     echo "✗ Server is not responding"
     exit 1
 fi
-🏗️ Architecture Details
-Hash Map Design
+```
+
+## 🏗️ Architecture Details
+
+### Hash Map Design
+
 The concurrent hash map uses a segmented design where:
+- The hash table is divided into N segments (default: 64)
+- Each segment has its own reader-writer lock (`std::shared_mutex`)
+- Operations on different segments can proceed concurrently
+- Resizing is handled at segment level to minimize contention
+- Each segment contains a linked list of key-value pairs
 
-The hash table is divided into N segments (default: 64)
+### Write-Ahead Log Format
 
-Each segment has its own reader-writer lock (std::shared_mutex)
-
-Operations on different segments can proceed concurrently
-
-Resizing is handled at segment level to minimize contention
-
-Each segment contains a linked list of key-value pairs
-
-Write-Ahead Log Format
-text
+```
 +---------------+---------------+---------------+---------------+---------------+---------------+
 | Sequence (8B) | Timestamp (8B)|  Operation (1B)| Key Size (8B) |     Key       | Value Size (8B)|    Value      |
 +---------------+---------------+---------------+---------------+---------------+---------------+
-Field Descriptions:
+```
 
-Sequence: Monotonically increasing number for ordering
+**Field Descriptions:**
+- **Sequence**: Monotonically increasing number for ordering
+- **Timestamp**: Operation timestamp in milliseconds
+- **Operation**: Enum value (PUT=0, DELETE=1, etc.)
+- **Key Size**: Size of key in bytes
+- **Key**: Actual key data
+- **Value Size**: Size of value in bytes (0 for DELETE)
+- **Value**: Actual value data (empty for DELETE)
 
-Timestamp: Operation timestamp in milliseconds
+### Memory Management
 
-Operation: Enum value (PUT=0, DELETE=1, etc.)
-
-Key Size: Size of key in bytes
-
-Key: Actual key data
-
-Value Size: Size of value in bytes (0 for DELETE)
-
-Value: Actual value data (empty for DELETE)
-
-Memory Management
-cpp
+```cpp
 // Efficient memory allocation strategy
 class MemoryPool {
 private:
@@ -403,21 +432,28 @@ public:
         return ptr;
     }
 };
-🔄 Comparison with Redis
-Feature	This KV Store	Redis
-Concurrency	Segment locking (multi-threaded)	Single-threaded event loop
-Persistence	Write-ahead log	RDB snapshots + AOF
-Protocol	Simple text	RESP (binary-safe)
-Data Types	Strings only	Multiple types (Strings, Lists, Sets, Hashes, etc.)
-Memory	C++ custom allocator	jemalloc
-Max Key Size	1KB	512MB
-Max Value Size	64KB	512MB
-Performance	~50K ops/sec	~100K ops/sec
-Fault Tolerance	100% recovery via WAL	Configurable persistence
-License	MIT	BSD
-📝 Development
-Building from Source
-bash
+```
+
+## 🔄 Comparison with Redis
+
+| Feature | This KV Store | Redis |
+|---------|--------------|-------|
+| **Concurrency** | Segment locking (multi-threaded) | Single-threaded event loop |
+| **Persistence** | Write-ahead log | RDB snapshots + AOF |
+| **Protocol** | Simple text | RESP (binary-safe) |
+| **Data Types** | Strings only | Multiple types (Strings, Lists, Sets, Hashes, etc.) |
+| **Memory** | C++ custom allocator | jemalloc |
+| **Max Key Size** | 1KB | 512MB |
+| **Max Value Size** | 64KB | 512MB |
+| **Performance** | ~50K ops/sec | ~100K ops/sec |
+| **Fault Tolerance** | 100% recovery via WAL | Configurable persistence |
+| **License** | MIT | BSD |
+
+## 📝 Development
+
+### Building from Source
+
+```bash
 # Clone with submodules
 git clone --recursive https://github.com/yourusername/kv-store.git
 cd kv-store
@@ -432,8 +468,11 @@ make -j$(nproc)
 
 # Run with debug output
 ./kv_server --debug
-Code Structure
-text
+```
+
+### Code Structure
+
+```
 kv-store/
 ├── include/                    # Header files
 │   ├── concurrent_hash_map.hpp  # Thread-safe hash map implementation
@@ -468,212 +507,96 @@ kv-store/
 ├── .gitignore                 # Git ignore file
 ├── Dockerfile                 # Docker container definition
 └── README.md                  # This file
-Adding New Features
-New Operations: Add to Operation enum in types.hpp and implement in KVServer::processCommand
+```
 
-New Data Structures: Extend ConcurrentHashMap template with new methods
+### Adding New Features
 
-Persistence Enhancements: Modify WriteAheadLog serialization format
+1. **New Operations**: Add to `Operation` enum in `types.hpp` and implement in `KVServer::processCommand`
+2. **New Data Structures**: Extend `ConcurrentHashMap` template with new methods
+3. **Persistence Enhancements**: Modify `WriteAheadLog` serialization format
+4. **Protocol Changes**: Update command parsing in server and client
 
-Protocol Changes: Update command parsing in server and client
+### Development Guidelines
 
-Development Guidelines
-Follow Google C++ Style Guide
+- Follow Google C++ Style Guide
+- Write unit tests for new features
+- Update documentation for API changes
+- Ensure backward compatibility when possible
+- Use `clang-format` for code formatting
+- Run all tests before submitting changes
+- Add benchmarks for performance-sensitive code 
 
-Write unit tests for new features
+## 🙏 Acknowledgments
 
-Update documentation for API changes
+- **Design inspired by**: Java's `ConcurrentHashMap` for segment locking pattern
+- **Persistence model based on**: Database Write-Ahead Logging principles
+- **Network library**: ASIO for high-performance async I/O
+- **Testing framework**: Google Test for comprehensive unit testing
+- **Build systems**: CMake and Make for cross-platform builds
 
-Ensure backward compatibility when possible
+## 📚 References
 
-Use clang-format for code formatting
+1. [Java ConcurrentHashMap](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html) - Segment locking inspiration
+2. [Write-Ahead Logging](https://www.sqlite.org/wal.html) - SQLite WAL implementation
+3. [ASIO C++ Library](https://think-async.com/Asio/) - Network I/O library
+4. [C++ Concurrency in Action](https://www.manning.com/books/c-plus-plus-concurrency-in-action) - Concurrency patterns
+5. [Redis Documentation](https://redis.io/documentation) - Comparison reference
 
-Run all tests before submitting changes
+## 📊 Future Enhancements
 
-Add benchmarks for performance-sensitive code
+### Planned Features
 
-🤝 Contributing
-We welcome contributions! Here's how you can help:
+- [ ] **Data Types**: Support for lists, sets, and hashes
+- [ ] **Replication**: Master-slave replication for high availability
+- [ ] **Clustering**: Distributed key-value store across multiple nodes
+- [ ] **Eviction Policies**: LRU, LFU, and TTL-based eviction
+- [ ] **Transactions**: Multi-key transactions with ACID properties
+- [ ] **Stream Processing**: Real-time stream processing capabilities
+- [ ] **SSL/TLS**: Encrypted communication support
+- [ ] **Prometheus Integration**: Metrics export for monitoring
+- [ ] **Redis Protocol**: Compatibility with Redis protocol
+- [ ] **Backup/Restore**: Point-in-time recovery capabilities
 
-Fork the repository
+### Research Areas
 
-Create a feature branch
+- **Lock-free algorithms**: Explore lock-free hash table implementations
+- **Memory compression**: Implement data compression for values
+- **Predictive caching**: Machine learning-based cache prediction
+- **Hardware acceleration**: Utilize GPU or specialized hardware
 
-bash
-git checkout -b feature/AmazingFeature
-Commit your changes
+## 🐛 Known Issues
 
-bash
-git commit -m 'Add some AmazingFeature'
-Push to the branch
+### Current Limitations
 
-bash
-git push origin feature/AmazingFeature
-Open a Pull Request
+1. **Large WAL files**: Recovery time increases with log size
+   - **Workaround**: Implement log rotation and checkpointing
+   
+2. **Memory fragmentation**: Many small allocations can cause fragmentation
+   - **Workaround**: Use memory pooling for small allocations
+   
+3. **No built-in backup**: Manual backup required for disaster recovery
+   - **Workaround**: Use file system snapshots or external backup tools
+   
+4. **Limited error recovery**: Network errors may require client retry
+   - **Workaround**: Implement automatic retry logic in client library
 
-Contribution Areas
-Performance Optimization: Improve throughput or reduce latency
 
-New Features: Add support for new data types or operations
+## 🔗 Related Projects
 
-Bug Fixes: Fix issues identified in testing
+- **Redis**: In-memory data structure store
+- **Memcached**: Distributed memory caching system
+- **RocksDB**: Persistent key-value store for fast storage
+- **LevelDB**: Fast key-value storage library
+- **etcd**: Distributed reliable key-value store
 
-Documentation: Improve documentation or add examples
+## 📖 Academic References
 
-Testing: Add more test cases or improve test coverage
-
-📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-text
-MIT License
-
-Copyright (c) 2024 Your Name
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-🙏 Acknowledgments
-Design inspired by: Java's ConcurrentHashMap for segment locking pattern
-
-Persistence model based on: Database Write-Ahead Logging principles
-
-Network library: ASIO for high-performance async I/O
-
-Testing framework: Google Test for comprehensive unit testing
-
-Build systems: CMake and Make for cross-platform builds
-
-📚 References
-Java ConcurrentHashMap - Segment locking inspiration
-
-Write-Ahead Logging - SQLite WAL implementation
-
-ASIO C++ Library - Network I/O library
-
-C++ Concurrency in Action - Concurrency patterns
-
-Redis Documentation - Comparison reference
-
-📊 Future Enhancements
-Planned Features
-Data Types: Support for lists, sets, and hashes
-
-Replication: Master-slave replication for high availability
-
-Clustering: Distributed key-value store across multiple nodes
-
-Eviction Policies: LRU, LFU, and TTL-based eviction
-
-Transactions: Multi-key transactions with ACID properties
-
-Stream Processing: Real-time stream processing capabilities
-
-SSL/TLS: Encrypted communication support
-
-Prometheus Integration: Metrics export for monitoring
-
-Redis Protocol: Compatibility with Redis protocol
-
-Backup/Restore: Point-in-time recovery capabilities
-
-Research Areas
-Lock-free algorithms: Explore lock-free hash table implementations
-
-Memory compression: Implement data compression for values
-
-Predictive caching: Machine learning-based cache prediction
-
-Hardware acceleration: Utilize GPU or specialized hardware
-
-🐛 Known Issues
-Current Limitations
-Large WAL files: Recovery time increases with log size
-
-Workaround: Implement log rotation and checkpointing
-
-Memory fragmentation: Many small allocations can cause fragmentation
-
-Workaround: Use memory pooling for small allocations
-
-No built-in backup: Manual backup required for disaster recovery
-
-Workaround: Use file system snapshots or external backup tools
-
-Limited error recovery: Network errors may require client retry
-
-Workaround: Implement automatic retry logic in client library
-
-Bug Reporting
-If you encounter any issues, please:
-
-Check the existing issues
-
-Create a new issue with:
-
-Detailed description of the problem
-
-Steps to reproduce
-
-Expected vs actual behavior
-
-Environment details (OS, compiler version, etc.)
-
-💬 Support
-For questions, issues, and feature requests:
-
-GitHub Issues: Open an issue
-
-Documentation: Check the /docs directory
-
-Examples: Review the /examples directory
-
-Community: Join our [Discord/Slack channel] (if applicable)
-
-Getting Help
-Check the FAQ in the documentation
-
-Search existing issues for similar problems
-
-Provide minimal reproducible examples when reporting bugs
-
-Include system information when reporting platform-specific issues
-
-🔗 Related Projects
-Redis: In-memory data structure store
-
-Memcached: Distributed memory caching system
-
-RocksDB: Persistent key-value store for fast storage
-
-LevelDB: Fast key-value storage library
-
-etcd: Distributed reliable key-value store
-
-📖 Academic References
 This project demonstrates concepts from:
+- **Database Systems**: Write-ahead logging, recovery protocols
+- **Operating Systems**: Concurrency control, memory management
+- **Distributed Systems**: Network protocols, fault tolerance
+- **Data Structures**: Hash tables, concurrent data structures
 
-Database Systems: Write-ahead logging, recovery protocols
+---
 
-Operating Systems: Concurrency control, memory management
-
-Distributed Systems: Network protocols, fault tolerance
-
-Data Structures: Hash tables, concurrent data structures
-
-Built with ❤️ using modern C++ for educational and research purposes. Demonstrating mastery of systems programming, concurrency control, and fault-tolerant design. Perfect for learning about high-performance storage systems, database internals, and systems programming in C++.
-
+*Built with ❤️ using modern C++ for educational and research purposes. Demonstrating mastery of systems programming, concurrency control, and fault-tolerant design. Perfect for learning about high-performance storage systems, database internals, and systems programming in C++.*
